@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 10 - धातु और अधातु Quiz</title>
+    <style>
+        :root {
+            --primary-bg: #111827;
+            --secondary-bg: #1f2937;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --danger: #ef4444;
+            --card-bg: rgba(31, 41, 55, 0.8);
+            --border-radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg) 0%, #0f172a 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Container & Sections */
+        .container {
+            max-width: 800px;
+            width: 95%;
+            margin: 20px auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Forms & Inputs */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+        }
+
+        .form-group input[readonly] {
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { background: #dc2626; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4); }
+        .btn-success { background: var(--success); }
+        .btn-success:hover { background: #059669; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
+
+        /* Quiz Header (Sticky) */
+        .quiz-header {
+            position: sticky;
+            top: 0;
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timer-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: #fca5a5;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-box.warning {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.5; background: var(--danger); color: white; }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Question Area */
+        .question-number {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .option.selected {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--accent);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Results & Review */
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stat-box h3 { font-size: 2rem; margin-bottom: 5px; color: var(--accent); }
+        .stat-box p { color: var(--text-muted); font-size: 0.9rem; }
+        
+        .review-card {
+            background: var(--card-bg);
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .review-option {
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .review-option.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 4px solid var(--success);
+        }
+
+        .review-option.wrong {
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 4px solid var(--danger);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #bfdbfe;
+            border-left: 4px solid var(--accent);
+        }
+
+        /* Utilities & Responsive */
+        .text-center { text-align: center; }
+        .mb-4 { margin-bottom: 1.5rem; }
+        .mt-4 { margin-top: 1.5rem; }
+        
+        /* Anti-Cheat Overlay */
+        #antiCheatOverlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(220, 38, 38, 0.95);
+            z-index: 9999;
+            color: white;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .glass-card { padding: 20px; }
+            .question-text { font-size: 1.15rem; }
+            .header-content { flex-direction: column; gap: 10px; }
+            .controls { flex-direction: column; gap: 15px; }
+            .controls button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="antiCheatOverlay">
+        <h1 style="font-size: 3rem; margin-bottom: 20px;">⚠️ चेतावनी!</h1>
+        <h2>आपने टैब/विंडो बदल दी थी।</h2>
+        <p style="margin-top: 10px; font-size: 1.2rem;">यह एक पारदर्शी परीक्षा है। कृपया इस स्क्रीन पर ही रहें।</p>
+        <button class="btn mt-4" style="background: white; color: red;" onclick="closeCheatWarning()">मैं समझ गया/गयी</button>
+    </div>
+
+    <div class="container">
+        
+        <div id="startScreen" class="screen active">
+            <div class="glass-card text-center mb-4">
+                <h1 style="color: var(--accent); margin-bottom: 10px;">विज्ञान : धातु और अधातु</h1>
+                <p style="color: var(--text-muted);">कक्षा 10 - UP Board (MCQ Test)</p>
+            </div>
+
+            <div class="glass-card">
+                <h2 class="mb-4">छात्र विवरण दर्ज करें</h2>
+                <form id="studentForm">
+                    <div class="form-group">
+                        <label for="studentName">आपका नाम (Full Name)</label>
+                        <input type="text" id="studentName" required placeholder="अपना नाम लिखें...">
+                    </div>
+                    <div class="form-group">
+                        <label for="studentClass">कक्षा (Class)</label>
+                        <input type="text" id="studentClass" value="10th" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentRoll">रोल नंबर (Roll Number)</label>
+                        <input type="number" id="studentRoll" required placeholder="अपना रोल नंबर लिखें...">
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Start Quiz 🚀</button>
+                </form>
+                <div class="mt-4" style="font-size: 0.9rem; color: var(--text-muted);">
+                    <strong>निर्देश:</strong><br>
+                    • कुल 40 प्रश्न हैं और समय 30 मिनट है।<br>
+                    • एक बार शुरू होने के बाद टैब न बदलें, अन्यथा चेतावनी मिलेगी।<br>
+                    • समय समाप्त होने पर टेस्ट अपने आप सबमिट हो जाएगा।
+                </div>
+            </div>
+        </div>
+
+        <div id="quizScreen" class="screen">
+            <div class="quiz-header">
+                <div class="header-content">
+                    <button class="btn" style="background: rgba(255,255,255,0.1); padding: 8px 15px;" onclick="toggleFullScreen()">
+                        [ ] Fullscreen
+                    </button>
+                    <div class="timer-box" id="timerBox">
+                        ⏱ <span id="timeDisplay">30:00</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="question-number" id="qNumberDisplay">Question 1 of 40</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="options-container" id="optionsContainer">
+                    </div>
+
+                <div class="controls">
+                    <button class="btn" id="prevBtn" onclick="prevQuestion()" style="background: var(--secondary-bg);">⬅ Previous</button>
+                    <button class="btn btn-success" id="submitBtn" onclick="confirmSubmit()" style="display: none;">Submit Test ✔</button>
+                    <button class="btn" id="nextBtn" onclick="nextQuestion()">Next ➡</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultScreen" class="screen">
+            <div class="glass-card text-center">
+                <h1 style="color: var(--success); font-size: 2.5rem; margin-bottom: 10px;">टेस्ट समाप्त! 🎉</h1>
+                <h3 id="resStudentInfo" style="color: var(--text-muted); margin-bottom: 20px;"></h3>
+                
+                <div class="result-stats">
+                    <div class="stat-box">
+                        <h3 id="resTotal">40</h3>
+                        <p>Total Questions</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 id="resAttempted" style="color: var(--accent);">0</h3>
+                        <p>Attempted</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 id="resCorrect" style="color: var(--success);">0</h3>
+                        <p>Correct</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 id="resWrong" style="color: var(--danger);">0</h3>
+                        <p>Wrong</p>
+                    </div>
+                </div>
+
+                <div style="margin: 30px 0; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 8px;">
+                    <h2>Final Score: <span id="resScore" style="color: var(--accent);">0</span> / 40</h2>
+                    <h3 style="margin-top: 10px;">Percentage: <span id="resPercent">0</span>%</h3>
+                    <p style="margin-top: 10px; color: var(--text-muted);">Time Taken: <span id="resTimeTaken">00:00</span></p>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn" onclick="showReview()">Review Answers 📝</button>
+                    <button class="btn btn-danger" onclick="location.reload()">Restart Quiz 🔄</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="reviewScreen" class="screen">
+            <div class="quiz-header" style="text-align: center;">
+                <h2>Answer Review</h2>
+                <button class="btn mt-4" onclick="location.reload()">Back to Home 🏠</button>
+            </div>
+            <div id="reviewContainer">
+                </div>
+            <div class="text-center mt-4 mb-4">
+                <button class="btn btn-danger" onclick="location.reload()">Restart Quiz 🔄</button>
+            </div>
+        </div>
+
+    </div>
+
+<script>
+/* ==========================================
+   Question Database (40 Questions)
+   Balanced Correct Answers: 10A, 10B, 10C, 10D
+========================================== */
+const rawQuestions = [
+    // --- 10 Questions with Answer A (Index 0) ---
+    { q: "कमरे के ताप पर द्रव अवस्था में पाई जाने वाली धातु कौन सी है?", options: ["पारा (Mercury)", "ब्रोमीन", "सोडियम", "लोहा"], ans: 0, exp: "पारा (Hg) एकमात्र ऐसी धातु है जो साधारण कमरे के तापमान पर तरल (Liquid) अवस्था में होती है।" },
+    { q: "निम्न में से कौन सी धातु आसानी से चाकू से काटी जा सकती है?", options: ["सोडियम", "तांबा", "लोहा", "एल्यूमीनियम"], ans: 0, exp: "सोडियम (Na) और पोटेशियम (K) बहुत मुलायम धातुएं होती हैं, जिन्हें चाकू से आसानी से काटा जा सकता है।" },
+    { q: "विद्युत तारों की वेल्डिंग के लिए किस मिश्रधातु का उपयोग होता है?", options: ["सोल्डर", "पीतल", "कांसा", "स्टेनलेस स्टील"], ans: 0, exp: "सोल्डर (सीसा Pb और टिन Sn की मिश्रधातु) का गलनांक कम होता है, इसलिए इसका उपयोग विद्युत तारों की वेल्डिंग में होता है।" },
+    { q: "कौन सी धातु ठंडे जल के साथ बहुत तेजी से अभिक्रिया करती है?", options: ["पोटेशियम", "मैग्नीशियम", "लोहा", "जिंक"], ans: 0, exp: "पोटेशियम (K) और सोडियम (Na) ठंडे जल के साथ हिंसक रूप से अभिक्रिया करके हाइड्रोजन गैस उत्पन्न करते हैं।" },
+    { q: "धातुओं को पीटकर पतली चादर बनाने के गुण को क्या कहते हैं?", options: ["आघातवर्ध्यता (Malleability)", "तन्यता (Ductility)", "चालकता", "ध्वानिकता"], ans: 0, exp: "धातुओं को हथौड़े से पीटकर पतली चादर (sheet) बनाने के गुण को आघातवर्ध्यता कहते हैं।" },
+    { q: "लोहे को जंग से बचाने के लिए उस पर जिंक (Zn) की परत चढ़ाने की प्रक्रिया को क्या कहते हैं?", options: ["गैल्वनीकरण (यशदलेपन)", "एनोडीकरण", "विद्युत लेपन", "मिश्रधातु बनाना"], ans: 0, exp: "लोहे या इस्पात को जंग से बचाने के लिए उस पर जस्ते (Zinc) की पतली परत चढ़ाई जाती है, जिसे गैल्वनीकरण (Galvanization) कहते हैं।" },
+    { q: "कौन सा अयस्क एल्यूमीनियम का मुख्य अयस्क है?", options: ["बॉक्साइट", "हेमेटाइट", "सिनेबार", "गैलेना"], ans: 0, exp: "बॉक्साइट (Al2O3·2H2O) एल्यूमीनियम का सबसे प्रमुख अयस्क है।" },
+    { q: "थर्माइट अभिक्रिया (Thermit Reaction) में आयरन(III) ऑक्साइड के साथ कौन सी धातु मिलाई जाती है?", options: ["एल्यूमीनियम", "जिंक", "सोडियम", "मैग्नीशियम"], ans: 0, exp: "रेल की पटरियों को जोड़ने के लिए थर्माइट अभिक्रिया का उपयोग होता है, जिसमें एल्यूमीनियम चूर्ण का उपयोग आयरन ऑक्साइड को अपचयित करने में किया जाता है।" },
+    { q: "सल्फाइड अयस्कों को वायु की उपस्थिति में अधिक ताप पर गर्म करने की प्रक्रिया क्या कहलाती है?", options: ["भर्जन (Roasting)", "निस्तापन (Calcination)", "अपचयन", "शोधन"], ans: 0, exp: "सल्फाइड अयस्कों को वायु की अधिकता में गर्म करके ऑक्साइड में बदलने की प्रक्रिया भर्जन कहलाती है।" },
+    { q: "कौन सी धातु तनु हाइड्रोक्लोरिक अम्ल (HCl) के साथ अभिक्रिया नहीं करती?", options: ["तांबा (Copper)", "मैग्नीशियम", "एल्यूमीनियम", "लोहा"], ans: 0, exp: "तांबा (Cu) हाइड्रोजन से कम अभिक्रियाशील है, इसलिए यह तनु अम्लों से हाइड्रोजन को विस्थापित नहीं कर सकता।" },
+
+    // --- 10 Questions with Answer B (Index 1) ---
+    { q: "कौन सी अधातु कमरे के ताप पर द्रव होती है?", options: ["आयोडीन", "ब्रोमीन", "कार्बन", "सल्फर"], ans: 1, exp: "ब्रोमीन (Br) एकमात्र ऐसी अधातु है जो कमरे के ताप पर द्रव अवस्था में पाई जाती है।" },
+    { q: "सबसे अधिक तन्य (Ductile) धातु कौन सी है?", options: ["चाँदी", "सोना", "तांबा", "लोहा"], ans: 1, exp: "सोना (Gold) सबसे अधिक तन्य धातु है। 1 ग्राम सोने से लगभग 2 किलोमीटर लंबा तार खींचा जा सकता है।" },
+    { q: "ऊष्मा और विद्युत की सबसे अच्छी चालक धातु कौन सी है?", options: ["तांबा", "चाँदी (Silver)", "एल्यूमीनियम", "लोहा"], ans: 1, exp: "चाँदी (Ag) ऊष्मा और विद्युत की सर्वोत्तम चालक है। इसके बाद तांबे का स्थान आता है।" },
+    { q: "शुद्ध सोना कितने कैरट का होता है?", options: ["22 कैरट", "24 कैरट", "18 कैरट", "20 कैरट"], ans: 1, exp: "शुद्ध सोना 24 कैरट (24K) का होता है, जो बहुत नरम होता है। आभूषण बनाने के लिए इसमें तांबा या चाँदी मिलाकर 22 कैरट का किया जाता है।" },
+    { q: "कौन सी अधातु विद्युत की सुचालक होती है?", options: ["सल्फर", "ग्रेफाइट", "हीरा", "फॉस्फोरस"], ans: 1, exp: "कार्बन का अपररूप 'ग्रेफाइट' एक अपवाद है जो अधातु होते हुए भी विद्युत का बहुत अच्छा सुचालक होता है।" },
+    { q: "अम्लराज (एक्वा रेजिया) किन दो अम्लों का ताजा मिश्रण होता है?", options: ["HNO3 और H2SO4", "सांद्र HCl और सांद्र HNO3 (3:1)", "तनु HCl और तनु HNO3", "H2SO4 और HCl"], ans: 1, exp: "एक्वा रेजिया 3 भाग सांद्र हाइड्रोक्लोरिक अम्ल (HCl) और 1 भाग सांद्र नाइट्रिक अम्ल (HNO3) का मिश्रण है, जो सोने को गला सकता है।" },
+    { q: "आयनिक यौगिकों के गलनांक और क्वथनांक कैसे होते हैं?", options: ["निम्न होते हैं", "उच्च (High) होते हैं", "सामान्य होते हैं", "वाष्पशील होते हैं"], ans: 1, exp: "मजबूत अंतर-आयनिक आकर्षण बल को तोड़ने के लिए बहुत अधिक ऊर्जा की आवश्यकता होती है, इसलिए आयनिक यौगिकों के गलनांक और क्वथनांक उच्च होते हैं।" },
+    { q: "कौन सी धातु भाप (Steam) के साथ अभिक्रिया करके धातु ऑक्साइड और हाइड्रोजन गैस बनाती है?", options: ["सोना", "लोहा (Iron)", "चाँदी", "सीसा"], ans: 1, exp: "लोहा (Fe), एल्यूमीनियम (Al), और जिंक (Zn) न तो ठंडे पानी से और न ही गर्म पानी से क्रिया करते हैं, ये केवल भाप के साथ क्रिया करते हैं।" },
+    { q: "पीतल (Brass) किन धातुओं की मिश्रधातु है?", options: ["तांबा और टिन", "तांबा और जिंक (Cu + Zn)", "सीसा और टिन", "लोहा और कार्बन"], ans: 1, exp: "पीतल (Brass) तांबे (Cu) और जस्ते (Zn) से बनी एक मिश्रधातु है।" },
+    { q: "धातुएं इलेक्ट्रॉन त्यागकर क्या बनाती हैं?", options: ["ऋणायन", "धनायन (Cation)", "उदासीन परमाणु", "उपधातु"], ans: 1, exp: "धातुओं के बाहरी कक्ष में 1, 2 या 3 इलेक्ट्रॉन होते हैं जिन्हें त्यागकर वे स्थिर धनायन बनाती हैं।" },
+
+    // --- 10 Questions with Answer C (Index 2) ---
+    { q: "निम्न में से कौन सी अधातु चमकीली (Lustrous) होती है?", options: ["कार्बन", "सल्फर", "आयोडीन", "फॉस्फोरस"], ans: 2, exp: "सामान्यतः अधातुएं चमकीली नहीं होतीं, लेकिन आयोडीन (Iodine) एक ऐसी अधातु है जिसमें धात्विक चमक होती है।" },
+    { q: "कौन सी धातु को मिट्टी के तेल (Kerosene) में डुबो कर रखा जाता है?", options: ["मैग्नीशियम", "कैल्शियम", "सोडियम", "एल्यूमीनियम"], ans: 2, exp: "सोडियम (Na) और पोटेशियम (K) ऑक्सीजन और नमी के साथ इतनी तेजी से क्रिया करते हैं कि खुले में रखने पर आग पकड़ लेते हैं, इसलिए इन्हें केरोसिन में रखा जाता है।" },
+    { q: "सिनेबार (Cinnabar - HgS) किस धातु का अयस्क है?", options: ["तांबा", "लोहा", "पारा (Mercury)", "जिंक"], ans: 2, exp: "सिनेबार (HgS) पारे (Mercury) का प्रमुख अयस्क है। इसे गर्म करने पर पारा प्राप्त होता है।" },
+    { q: "कार्बन कार्बोनेट अयस्कों को वायु की सीमित मात्रा में गर्म करने को क्या कहते हैं?", options: ["भर्जन", "प्रगलन", "निस्तापन (Calcination)", "संक्षारण"], ans: 2, exp: "कार्बोनेट अयस्कों को वायु की अनुपस्थिति या सीमित मात्रा में उच्च ताप पर गर्म करने की प्रक्रिया निस्तापन कहलाती है।" },
+    { q: "धातुओं के ऑक्साइड की प्रकृति सामान्यतः कैसी होती है?", options: ["अम्लीय", "उदासीन", "क्षारकीय (Basic)", "उभयधर्मी"], ans: 2, exp: "धातुओं के ऑक्साइड सामान्यतः क्षारकीय (Basic) होते हैं, जो लाल लिटमस को नीला कर देते हैं।" },
+    { q: "सक्रियता श्रेणी में सबसे नीचे स्थित धातु कौन सी है?", options: ["पोटेशियम", "सोडियम", "सोना (Gold)", "लोहा"], ans: 2, exp: "सोना (Au) और प्लेटिनम (Pt) सक्रियता श्रेणी में सबसे नीचे होते हैं, इसलिए ये सबसे कम अभिक्रियाशील (Least Reactive) होते हैं।" },
+    { q: "विद्युत अपघटनी परिष्करण (Electrolytic refining) में अशुद्ध धातु का क्या बनाया जाता है?", options: ["कैथोड", "विद्युत अपघट्य", "एनोड (Anode)", "उदासीन इलेक्ट्रोड"], ans: 2, exp: "विद्युत अपघटनी शोधन में अशुद्ध धातु का एनोड (धनात्मक सिरा) और शुद्ध धातु की पतली पट्टी का कैथोड बनाया जाता है।" },
+    { q: "चाँदी की वस्तुएं हवा में खुली रखने पर कुछ समय बाद काली क्यों पड़ जाती हैं?", options: ["ऑक्साइड बनने के कारण", "क्लोराइड बनने के कारण", "सिल्वर सल्फाइड बनने के कारण", "नाइट्रेट बनने के कारण"], ans: 2, exp: "हवा में उपस्थित सल्फर के साथ अभिक्रिया करके चाँदी, सिल्वर सल्फाइड (Ag2S) की काली परत बना लेती है।" },
+    { q: "कौन सी धातु प्रकृति में मुक्त अवस्था (Free state) में पाई जाती है?", options: ["सोडियम", "कैल्शियम", "प्लैटिनम", "मैग्नीशियम"], ans: 2, exp: "प्लैटिनम और सोना बहुत कम अभिक्रियाशील होते हैं, इसलिए ये प्रकृति में मुक्त अवस्था में पाए जाते हैं।" },
+    { q: "अम्लों के साथ धातु की अभिक्रिया होने पर सामान्यतः कौन सी गैस निकलती है?", options: ["ऑक्सीजन", "नाइट्रोजन", "हाइड्रोजन (H2)", "कार्बन डाइऑक्साइड"], ans: 2, exp: "धातुएं तनु अम्लों के साथ अभिक्रिया करके लवण बनाती हैं और हाइड्रोजन गैस (H2) मुक्त करती हैं (पॉप साउंड के साथ जलती है)।" },
+
+    // --- 10 Questions with Answer D (Index 3) ---
+    { q: "एल्यूमीनियम पर मोटी ऑक्साइड की परत बनाने की प्रक्रिया को क्या कहते हैं?", options: ["गैल्वनीकरण", "मिश्रधात्विकरण", "क्रिस्टलीकरण", "एनोडीकरण (Anodising)"], ans: 3, exp: "एल्यूमीनियम को संक्षारण से बचाने के लिए उस पर एल्यूमीनियम ऑक्साइड की मोटी परत चढ़ाई जाती है, जिसे एनोडीकरण कहते हैं।" },
+    { q: "प्रकृति में पाया जाने वाला सबसे कठोर पदार्थ कौन सा है?", options: ["लोहा", "टंगस्टन", "टाइटेनियम", "हीरा (Diamond)"], ans: 3, exp: "हीरा (Diamond) कार्बन का एक अपररूप है और यह अब तक ज्ञात सबसे कठोर प्राकृतिक पदार्थ है।" },
+    { q: "निम्न में से कौन सा उभयधर्मी ऑक्साइड (Amphoteric oxide) है?", options: ["Na2O", "MgO", "CaO", "Al2O3 (एल्यूमीनियम ऑक्साइड)"], ans: 3, exp: "एल्यूमीनियम ऑक्साइड (Al2O3) और जिंक ऑक्साइड (ZnO) अम्लीय और क्षारकीय दोनों प्रकार का व्यवहार प्रदर्शित करते हैं, इसलिए इन्हें उभयधर्मी ऑक्साइड कहते हैं।" },
+    { q: "कांसा (Bronze) किन धातुओं से मिलकर बनता है?", options: ["तांबा और जिंक", "सीसा और टिन", "लोहा और निकेल", "तांबा और टिन (Cu + Sn)"], ans: 3, exp: "कांसा (Bronze) तांबे (Cu) और टिन (Sn) की मिश्रधातु है। इसका उपयोग मूर्तियां और मेडल बनाने में होता है।" },
+    { q: "अधातुओं के ऑक्साइड की प्रकृति सामान्यतः कैसी होती है?", options: ["क्षारकीय", "उभयधर्मी", "उदासीन", "अम्लीय (Acidic)"], ans: 3, exp: "अधातुएं ऑक्सीजन से संयोग करके अम्लीय ऑक्साइड बनाती हैं, जो जल में घुलकर अम्ल बनाते हैं (जैसे SO2, CO2)।" },
+    { q: "अमलगम (Amalgam) क्या है?", options: ["सोने की मिश्रधातु", "लोहे का अयस्क", "कार्बन का अपररूप", "पारे (Hg) की किसी धातु के साथ मिश्रधातु"], ans: 3, exp: "यदि किसी मिश्रधातु में एक धातु पारा (Mercury - Hg) हो, तो उसे अमलगम कहते हैं (अपवाद: लोहा पारे के साथ अमलगम नहीं बनाता)।" },
+    { q: "कौन सी धातु तनु HNO3 (नाइट्रिक अम्ल) के साथ अभिक्रिया करके H2 गैस देती है?", options: ["तांबा", "जिंक", "लोहा", "मैग्नीशियम (Mg)"], ans: 3, exp: "केवल मैग्नीशियम (Mg) और मैंगनीज (Mn) ही अति तनु नाइट्रिक अम्ल (HNO3) के साथ अभिक्रिया करके हाइड्रोजन गैस उत्पन्न करते हैं।" },
+    { q: "लोहे पर जंग लगने (Rusting) का रासायनिक सूत्र क्या है?", options: ["FeO", "Fe3O4", "FeCl3", "Fe2O3.xH2O"], ans: 3, exp: "जंग का रासायनिक सूत्र Fe2O3.xH2O होता है (हाइड्रेटेड आयरन(III) ऑक्साइड)।" },
+    { q: "कॉपर को वायु में खुला छोड़ने पर उस पर किस रंग की परत चढ़ जाती है?", options: ["काली", "सफेद", "लाल", "हरी (Green)"], ans: 3, exp: "कॉपर वायु में आर्द्र कार्बन डाइऑक्साइड से अभिक्रिया करके हरे रंग का बेसिक कॉपर कार्बोनेट (CuCO3.Cu(OH)2) बनाता है।" },
+    { q: "सबसे अधिक अभिक्रियाशील (Most Reactive) धातु कौन सी है?", options: ["सोडियम", "कैल्शियम", "मैग्नीशियम", "पोटेशियम (Potassium)"], ans: 3, exp: "सक्रियता श्रेणी में पोटेशियम (K) सबसे ऊपर होता है, अतः यह सबसे अधिक अभिक्रियाशील धातु है।" }
+];
+
+/* ==========================================
+   State Variables
+========================================== */
+let quizQuestions = [];
+let currentQIndex = 0;
+let userAnswers = [];
+let totalSeconds = 30 * 60; // 30 Minutes
+let timerInterval = null;
+let quizStarted = false;
+let quizEnded = false;
+let cheatWarnings = 0;
+let startTime = 0;
+
+/* ==========================================
+   Audio Context (Beep Sound)
+========================================== */
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+function playClickSound() {
+    try {
+        if(!audioCtx) audioCtx = new AudioContext();
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.1);
+    } catch(e) { console.log("Audio not supported"); }
+}
+
+/* ==========================================
+   Initialization & Shuffling
+========================================== */
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+document.getElementById('studentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const sName = document.getElementById('studentName').value.trim();
+    const sRoll = document.getElementById('studentRoll').value.trim();
+    
+    if(sName === '' || sRoll === '') return alert("Please fill all details!");
+
+    document.getElementById('resStudentInfo').innerText = `${sName} (Roll No: ${sRoll})`;
+    
+    // Setup Questions (Deep copy to avoid mutating original, then shuffle)
+    quizQuestions = JSON.parse(JSON.stringify(rawQuestions));
+    shuffleArray(quizQuestions); // Randomize questions!
+    userAnswers = new Array(quizQuestions.length).fill(null);
+    
+    switchScreen('startScreen', 'quizScreen');
+    startQuiz();
+});
+
+function switchScreen(hideId, showId) {
+    document.getElementById(hideId).classList.remove('active');
+    document.getElementById(showId).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ==========================================
+   Quiz Logic
+========================================== */
+function startQuiz() {
+    quizStarted = true;
+    startTime = Date.now();
+    renderQuestion();
+    startTimer();
+    
+    // Anti-cheat setup
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+}
+
+function handleVisibilityChange() {
+    if (document.hidden && !quizEnded && quizStarted) {
+        cheatWarnings++;
+        document.getElementById('antiCheatOverlay').style.display = 'flex';
+    }
+}
+
+function closeCheatWarning() {
+    document.getElementById('antiCheatOverlay').style.display = 'none';
+}
+
+function startTimer() {
+    const timeDisplay = document.getElementById('timeDisplay');
+    const timerBox = document.getElementById('timerBox');
+    
+    timerInterval = setInterval(() => {
+        totalSeconds--;
+        let m = Math.floor(totalSeconds / 60);
+        let s = totalSeconds % 60;
+        timeDisplay.innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+        
+        if(totalSeconds <= 300 && !timerBox.classList.contains('warning')) {
+            timerBox.classList.add('warning'); // Last 5 mins blink
+        }
+        
+        if (totalSeconds <= 0) {
+            clearInterval(timerInterval);
+            alert("समय समाप्त! आपका टेस्ट ऑटो-सबमिट हो रहा है।");
+            submitQuiz();
+        }
+    }, 1000);
+}
+
+function renderQuestion() {
+    const qData = quizQuestions[currentQIndex];
+    document.getElementById('qNumberDisplay').innerText = `प्रश्न ${currentQIndex + 1} / ${quizQuestions.length}`;
+    document.getElementById('questionText').innerText = qData.q;
+    
+    const optsContainer = document.getElementById('optionsContainer');
+    optsContainer.innerHTML = '';
+    
+    qData.options.forEach((optText, index) => {
+        const div = document.createElement('div');
+        div.className = `option ${userAnswers[currentQIndex] === index ? 'selected' : ''}`;
+        div.innerHTML = `<strong>${String.fromCharCode(65 + index)}.</strong> &nbsp; ${optText}`;
+        div.onclick = () => selectOption(index);
+        optsContainer.appendChild(div);
+    });
+
+    // Update Progress Bar
+    const progress = ((currentQIndex + 1) / quizQuestions.length) * 100;
+    document.getElementById('progressBar').style.width = `${progress}%`;
+
+    // Button states
+    document.getElementById('prevBtn').style.visibility = currentQIndex === 0 ? 'hidden' : 'visible';
+    
+    if (currentQIndex === quizQuestions.length - 1) {
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('submitBtn').style.display = 'inline-flex';
+    } else {
+        document.getElementById('nextBtn').style.display = 'inline-flex';
+        document.getElementById('submitBtn').style.display = 'none';
+    }
+}
+
+function selectOption(index) {
+    playClickSound();
+    userAnswers[currentQIndex] = index;
+    renderQuestion(); // Re-render to show selection
+}
+
+function prevQuestion() {
+    if (currentQIndex > 0) {
+        playClickSound();
+        currentQIndex--;
+        renderQuestion();
+    }
+}
+
+function nextQuestion() {
+    if (currentQIndex < quizQuestions.length - 1) {
+        playClickSound();
+        currentQIndex++;
+        renderQuestion();
+    }
+}
+
+function confirmSubmit() {
+    playClickSound();
+    if(confirm("क्या आप टेस्ट सबमिट करना चाहते हैं? कृपया सुनिश्चित करें कि आपने सभी उत्तर दे दिए हैं।")) {
+        submitQuiz();
+    }
+}
+
+/* ==========================================
+   Submit & Results
+========================================== */
+function submitQuiz() {
+    quizEnded = true;
+    clearInterval(timerInterval);
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    if(document.fullscreenElement) {
+        document.exitFullscreen().catch(()=>{});
+    }
+
+    let correct = 0;
+    let attempted = 0;
+
+    userAnswers.forEach((ans, idx) => {
+        if (ans !== null) {
+            attempted++;
+            if (ans === quizQuestions[idx].ans) {
+                correct++;
+            }
+        }
+    });
+
+    const wrong = attempted - correct;
+    const scorePercent = ((correct / quizQuestions.length) * 100).toFixed(2);
+    
+    // Time Taken Calculation
+    const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+    let m = Math.floor(timeTakenSec / 60);
+    let s = timeTakenSec % 60;
+    document.getElementById('resTimeTaken').innerText = `${m} min ${s} sec`;
+
+    document.getElementById('resAttempted').innerText = attempted;
+    document.getElementById('resCorrect').innerText = correct;
+    document.getElementById('resWrong').innerText = wrong;
+    document.getElementById('resScore').innerText = correct;
+    document.getElementById('resPercent').innerText = scorePercent;
+
+    switchScreen('quizScreen', 'resultScreen');
+}
+
+/* ==========================================
+   Review System
+========================================== */
+function showReview() {
+    switchScreen('resultScreen', 'reviewScreen');
+    const container = document.getElementById('reviewContainer');
+    container.innerHTML = '';
+
+    quizQuestions.forEach((qData, qIdx) => {
+        const userAns = userAnswers[qIdx];
+        const correctAns = qData.ans;
+        
+        let cardHTML = `<div class="review-card">
+            <h3 style="margin-bottom: 15px; color: var(--accent);">Q${qIdx + 1}: ${qData.q}</h3>
+            <div style="display: flex; flex-direction: column; gap: 5px;">`;
+
+        qData.options.forEach((opt, oIdx) => {
+            let optClass = 'review-option';
+            let icon = '';
+
+            if (oIdx === correctAns) {
+                optClass += ' correct';
+                icon = '✔';
+            } else if (userAns === oIdx && userAns !== correctAns) {
+                optClass += ' wrong';
+                icon = '❌';
+            }
+
+            cardHTML += `<div class="${optClass}">
+                ${String.fromCharCode(65 + oIdx)}. ${opt} <span style="float:right;">${icon}</span>
+            </div>`;
+        });
+
+        // Add note if unattempted
+        if (userAns === null) {
+            cardHTML += `<p style="color: var(--text-muted); margin-top: 5px; font-size: 0.9rem;"><i>*आपने यह प्रश्न छोड़ दिया था।</i></p>`;
+        }
+
+        // Add Explanation
+        cardHTML += `</div>
+            <div class="explanation">
+                <strong>💡 स्पष्टीकरण:</strong><br>
+                ${qData.exp}
+            </div>
+        </div>`;
+
+        container.innerHTML += cardHTML;
+    });
+}
+
+/* ==========================================
+   Fullscreen Toggle
+========================================== */
+function toggleFullScreen() {
+    playClickSound();
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Error: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+</script>
+</body>
+</html>
